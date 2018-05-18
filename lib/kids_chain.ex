@@ -1,0 +1,2 @@
+defmodule KidsChain do
+end
