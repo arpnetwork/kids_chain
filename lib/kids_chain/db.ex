@@ -126,6 +126,10 @@ defmodule KidsChain.DB do
     end
   end
 
+  def users do
+    :mnesia.dirty_select(:user, [{user(id: :"$1", inviter: :"$2", _: :_), [], [{{:"$1", :"$2"}}]}])
+  end
+
   @doc """
   Returns the size of the users.
   """

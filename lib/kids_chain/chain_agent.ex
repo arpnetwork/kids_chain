@@ -2,6 +2,7 @@ alias KidsChain.DB
 alias KidsChain.KChain
 
 require DB
+require Logger
 
 defmodule KidsChain.ChainAgent do
   @moduledoc """
@@ -21,11 +22,7 @@ defmodule KidsChain.ChainAgent do
   def start_link(_opts) do
     res = Agent.start_link(fn -> nil end, name: __MODULE__)
 
-    Agent.cast(__MODULE__, fn _ ->
-      pending = :ets.new(:pending, [:bag])
-      rebuild(nil, pending)
-      :ets.delete(pending)
-    end)
+    Agent.cast(__MODULE__, fn _ -> rebuild() end)
 
     res
   end
@@ -73,29 +70,14 @@ defmodule KidsChain.ChainAgent do
   end
 
   # Rebuild invite tree when restarted.
-  defp rebuild(uid, pending) do
-    case DB.next(uid) do
-      [DB.user(uid: uid, id: id, inviter: inviter)] ->
-        consume(id, inviter, pending)
-        rebuild(uid, pending)
+  defp rebuild do
+    ts = System.monotonic_time(:millisecond)
 
-      _ ->
-        :ok
-    end
-  end
+    DB.users()
+    |> Enum.sort()
+    |> Enum.each(fn {id, inviter} -> KChain.insert(id, inviter) end)
 
-  defp consume(id, inviter, pending) do
-    case KChain.insert(id, inviter) do
-      {:ok, _} ->
-        :ets.lookup(pending, id)
-        |> Enum.each(fn {inviter, id} ->
-          consume(id, inviter, pending)
-        end)
-
-        :ets.delete(pending, id)
-
-      :error ->
-        :ets.insert(pending, {inviter, id})
-    end
+    ts = System.monotonic_time(:millisecond) - ts
+    Logger.info("Rebuild invite tree completed. Cost #{ts}ms.")
   end
 end
