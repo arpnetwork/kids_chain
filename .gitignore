@@ -23,3 +23,6 @@ erl_crash.dump
 kids_chain-*.tar
 
 /.elixir_ls/
+/.vscode/
+/.mix_tasks
+/Mnesia.*/

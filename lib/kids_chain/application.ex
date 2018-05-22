@@ -6,10 +6,13 @@ defmodule KidsChain.Application do
   use Application
 
   def start(_type, _args) do
+    KidsChain.DB.start()
+
     # List all child processes to be supervised
     children = [
-      # Starts a worker by calling: KidsChain.Worker.start_link(arg)
-      # {KidsChain.Worker, arg},
+      KidsChain.KChain,
+      KidsChain.ChainAgent,
+      {Plug.Adapters.Cowboy2, scheme: :http, plug: KidsChain.Router, options: [port: 3000]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
