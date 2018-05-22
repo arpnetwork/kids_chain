@@ -16,9 +16,10 @@ defmodule KidsChain.Router do
     inviter = conn.params["inviter"]
 
     unless is_nil(uid) || is_nil(inviter) do
-      u = conn.params |> normalize() |> Map.take([:uid, :inviter, :content, :email, :address])
+      keys = [:uid, :inviter, :content, :from, :to, :address]
+      u = conn.params |> normalize() |> Map.take(keys)
 
-      case ChainAgent.create(u) do
+      case map_size(u) == length(keys) and ChainAgent.create(u) do
         {:ok, _} -> send_resp(conn, 200, "OK")
         _ -> send_forbidden(conn)
       end
@@ -27,11 +28,11 @@ defmodule KidsChain.Router do
     end
   end
 
-  post "/users/:uid" do
+  patch "/users/:uid" do
     uid = conn.params["uid"]
 
     unless is_nil(uid) do
-      u = conn.params |> normalize() |> Map.take([:uid, :content, :email, :address])
+      u = conn.params |> normalize() |> Map.take([:uid, :address])
 
       case DB.update(u) do
         {:atomic, _} -> send_resp(conn, 200, "OK")
@@ -45,7 +46,19 @@ defmodule KidsChain.Router do
   get "/users/:uid" do
     case DB.lookup(uid) do
       [u] ->
-        resp = u |> DB.to_map() |> Poison.encode!()
+        # id => uid
+        fun = fn
+          0 -> "0"
+          id -> DB.uid(id)
+        end
+
+        resp =
+          u
+          |> DB.to_map()
+          |> Map.update(:inviter, "0", fun)
+          |> Map.delete(:id)
+          |> Poison.encode!()
+
         send_resp(conn, 200, resp)
 
       _ ->

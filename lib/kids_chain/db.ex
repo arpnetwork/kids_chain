@@ -7,7 +7,7 @@ defmodule KidsChain.DB do
   A set of functions for working with user over Mnesia.
   """
 
-  Record.defrecord(:user, [:uid, :id, :inviter, :content, :email, :address])
+  Record.defrecord(:user, [:uid, :id, :inviter, :content, :from, :to, :address])
 
   @timeout 5000
 
