@@ -23,12 +23,15 @@ environment :dev do
   set dev_mode: true
   set include_erts: false
   set cookie: :"CyrmUKdiF@=Uj$GXUp<VI=S!~4YVJ}}aJHSSm=EK?H$HZY|g(d(<P*AA(7W=Pr^y"
+  set erl_opts: "-elixir ansi_enabled true"
 end
 
 environment :prod do
-  set include_erts: true
+  set include_erts: false
   set include_src: false
   set cookie: :"jp&JJLBFzKeV/Z`Sk4p1bK.dORgJ@dD[ITgY/whO<d=b6hu&?bO1|LS0wPaE5>Ty"
+  set erl_opts: "-elixir ansi_enabled true +K true +P 10000000 +Q 10000000"
+  set vm_args: "rel/vm.args"
 end
 
 

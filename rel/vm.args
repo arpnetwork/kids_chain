@@ -1,0 +1,8 @@
+## Node name
+-name <%= release_name %>@127.0.0.1
+
+## Node cookie, used for distribution
+-setcookie <%= release.profile.cookie %>
+
+## Mnesia dir
+-mnesia dir '"${KC_DATA_DIR}"'
