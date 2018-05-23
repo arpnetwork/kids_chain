@@ -26,3 +26,5 @@ kids_chain-*.tar
 /.vscode/
 /.mix_tasks
 /Mnesia.*/
+/docker/*.tar.gz
+/docker/kchain
