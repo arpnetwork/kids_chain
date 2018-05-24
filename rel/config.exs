@@ -30,7 +30,7 @@ environment :prod do
   set include_erts: false
   set include_src: false
   set cookie: :"jp&JJLBFzKeV/Z`Sk4p1bK.dORgJ@dD[ITgY/whO<d=b6hu&?bO1|LS0wPaE5>Ty"
-  set erl_opts: "-elixir ansi_enabled true +K true +P 10000000 +Q 10000000"
+  set erl_opts: "-elixir ansi_enabled true"
   set vm_args: "rel/vm.args"
 end
 

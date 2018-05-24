@@ -48,7 +48,7 @@ defmodule KidsChain.DB do
       id = :mnesia.dirty_update_counter(:variable, :id, 1)
       u = params |> to_user() |> user(id: id, inviter: inviter)
 
-      :mnesia.transaction(fn ->
+      :mnesia.sync_transaction(fn ->
         :mnesia.write(u)
         u
       end)

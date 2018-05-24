@@ -4,5 +4,12 @@
 ## Node cookie, used for distribution
 -setcookie <%= release.profile.cookie %>
 
-## Mnesia dir
+## Mnesia
 -mnesia dir '"${KC_DATA_DIR}"'
+-mnesia dump_log_write_threshold 50000
+-mnesia dc_dump_limit 40
+
+## VM
++K true
++P 10000000
++Q 10000000
