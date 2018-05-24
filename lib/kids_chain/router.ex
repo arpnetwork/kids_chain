@@ -16,7 +16,7 @@ defmodule KidsChain.Router do
     inviter = conn.params["inviter"]
 
     unless is_nil(uid) || is_nil(inviter) do
-      keys = [:uid, :inviter, :content, :from, :to, :address]
+      keys = [:uid, :inviter, :content, :from, :to]
       u = conn.params |> normalize() |> Map.take(keys)
 
       case map_size(u) == length(keys) and ChainAgent.create(u) do
