@@ -7,6 +7,9 @@ defmodule KidsChain.Router do
 
   use Plug.Router
 
+  # /metrics endpoint for Prometheus
+  plug KidsChain.PrometheusExporter
+
   plug Plug.Parsers, parsers: [:urlencoded]
   plug :match
   plug :dispatch

@@ -6,6 +6,10 @@ defmodule KidsChain.Application do
   use Application
 
   def start(_type, _args) do
+    # Prometheus
+    KidsChain.PipelineInstrumenter.setup()
+    KidsChain.PrometheusExporter.setup()
+
     KidsChain.DB.start()
 
     # List all child processes to be supervised

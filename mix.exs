@@ -25,6 +25,7 @@ defmodule KidsChain.MixProject do
       {:plug, "~> 1.5"},
       {:cowboy, "~> 2.4"},
       {:poison, "~> 3.1"},
+      {:prometheus_plugs, "~> 1.1"},
       {:distillery, "~> 1.5", runtime: false}
     ]
   end
