@@ -12,7 +12,7 @@ defmodule KidsChain.Router do
   # Collecting http metrics
   plug KidsChain.PipelineInstrumenter
 
-  plug Plug.Parsers, parsers: [:urlencoded]
+  plug Plug.Parsers, parsers: [:urlencoded], pass: ["*/*"]
   plug :match
   plug :dispatch
 
