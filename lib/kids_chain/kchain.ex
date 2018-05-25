@@ -53,12 +53,7 @@ defmodule KidsChain.KChain do
   """
   @spec insert(id, parent) :: {:ok, depth} | :error
   def insert(id, parent) do
-    args = ["i", id, parent] |> Enum.join(" ")
-
-    case GenServer.call(__MODULE__, {:cmd, args <> "\n"}) do
-      {:ok, [depth]} -> {:ok, depth}
-      _ -> :error
-    end
+    command(["i", id, parent], fn [depth] -> {:ok, depth} end)
   end
 
   @doc """
@@ -66,12 +61,7 @@ defmodule KidsChain.KChain do
   """
   @spec leader(id) :: {:ok, leader, depth} | :error
   def leader(id \\ 0) do
-    args = ["l", id] |> Enum.join(" ")
-
-    case GenServer.call(__MODULE__, {:cmd, args <> "\n"}) do
-      {:ok, [leader, depth]} -> {:ok, leader, depth}
-      _ -> :error
-    end
+    command(["l", id], fn [leader, depth] -> {:ok, leader, depth} end)
   end
 
   @doc """
@@ -79,12 +69,7 @@ defmodule KidsChain.KChain do
   """
   @spec chain(id, integer) :: {:ok, list} | :error
   def chain(id \\ 0, limit \\ 16) do
-    args = ["c", id, limit] |> Enum.join(" ")
-
-    with {:ok, ids} <- GenServer.call(__MODULE__, {:cmd, args <> "\n"}) do
-      # Removes tail `0`
-      {:ok, List.delete(ids, 0)}
-    end
+    command(["c", id, limit], fn ids -> {:ok, List.delete(ids, 0)} end)
   end
 
   @doc false
@@ -108,5 +93,15 @@ defmodule KidsChain.KChain do
     GenServer.reply(pid, res)
 
     {:noreply, state(s, pids: pids)}
+  end
+
+  # Makes a synchronous command call to the server and waits for its reply.
+  # If command success, the `fun` is executed with result, returning its result
+  defp command(args, fun) when is_list(args) and is_function(fun) do
+    cmd = Enum.join(args, " ") <> "\n"
+
+    with {:ok, items} <- GenServer.call(__MODULE__, {:cmd, cmd}) do
+      fun.(items)
+    end
   end
 end

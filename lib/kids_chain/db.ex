@@ -44,16 +44,21 @@ defmodule KidsChain.DB do
     id = id(uid)
     inviter = if inviter != "0", do: id(inviter), else: 0
 
-    if is_nil(id) and not is_nil(inviter) do
-      id = :mnesia.dirty_update_counter(:variable, :id, 1)
-      u = params |> to_user() |> user(id: id, inviter: inviter)
+    cond do
+      not is_nil(id) ->
+        {:error, :conflict}
 
-      :mnesia.sync_transaction(fn ->
-        :mnesia.write(u)
-        u
-      end)
-    else
-      :error
+      is_nil(inviter) ->
+        {:error, :not_found}
+
+      true ->
+        id = :mnesia.dirty_update_counter(:variable, :id, 1)
+        u = params |> to_user() |> user(id: id, inviter: inviter)
+
+        :mnesia.sync_transaction(fn ->
+          :mnesia.write(u)
+          u
+        end)
     end
   end
 
@@ -69,7 +74,7 @@ defmodule KidsChain.DB do
           u
 
         _ ->
-          :mnesia.abort(:no_entry)
+          :mnesia.abort(:not_found)
       end
     end)
   end
