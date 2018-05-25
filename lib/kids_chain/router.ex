@@ -9,6 +9,8 @@ defmodule KidsChain.Router do
 
   # /metrics endpoint for Prometheus
   plug KidsChain.PrometheusExporter
+  # Collecting http metrics
+  plug KidsChain.PipelineInstrumenter
 
   plug Plug.Parsers, parsers: [:urlencoded]
   plug :match
