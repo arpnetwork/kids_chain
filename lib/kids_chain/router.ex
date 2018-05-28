@@ -23,7 +23,7 @@ defmodule KidsChain.Router do
 
     status =
       unless is_nil(uid) || is_nil(inviter) do
-        keys = [:uid, :inviter, :content, :from, :to]
+        keys = [:uid, :inviter, :name, :content, :from, :to]
         u = conn.params |> normalize() |> Map.take(keys)
 
         if map_size(u) == length(keys) do
@@ -91,9 +91,8 @@ defmodule KidsChain.Router do
     uid = conn.query_params["uid"]
 
     case ChainAgent.leader(uid) do
-      {:ok, uid, depth} ->
-        resp = %{uid: uid, depth: depth} |> Poison.encode!()
-        send_resp(conn, :ok, resp)
+      {:ok, leader} ->
+        send_resp(conn, :ok, leader |> Poison.encode!())
 
       _ ->
         send_resp(conn, :not_found)

@@ -56,9 +56,14 @@ defmodule KidsChain.ChainAgent do
 
     unless is_nil(id) do
       case KChain.leader(id) do
-        {:ok, id, depth} when depth > 0 -> {:ok, DB.uid(id), depth}
-        {:ok, _, _} -> {:error, :not_found}
-        _ -> {:error, :internal_server_error}
+        {:ok, id, depth} when depth > 0 ->
+          {:ok, Map.put(DB.info(id), :depth, depth)}
+
+        {:ok, _, _} ->
+          {:error, :not_found}
+
+        _ ->
+          {:error, :internal_server_error}
       end
     else
       {:error, :not_found}
@@ -70,10 +75,10 @@ defmodule KidsChain.ChainAgent do
   """
   @spec chain(uid) :: {:ok, [uid]} | {:error, status}
   def chain(uid) do
-    with {:ok, uid, _} <- leader(uid),
+    with {:ok, %{uid: uid}} <- leader(uid),
          id = DB.id(uid),
          {:ok, ids} <- KChain.chain(id) do
-      {:ok, Enum.map(ids, &DB.uid/1)}
+      {:ok, Enum.map(ids, &DB.info/1)}
     else
       {:error, _} = err -> err
       _ -> {:error, :internal_server_error}

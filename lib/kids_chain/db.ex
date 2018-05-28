@@ -7,7 +7,7 @@ defmodule KidsChain.DB do
   A set of functions for working with user over Mnesia.
   """
 
-  Record.defrecord(:user, [:uid, :id, :inviter, :content, :from, :to, :address, :at])
+  Record.defrecord(:user, [:uid, :id, :inviter, :name, :content, :from, :to, :address, :at])
 
   @timeout 5000
 
@@ -96,6 +96,16 @@ defmodule KidsChain.DB do
   def id(uid) when is_binary(uid) do
     case lookup(uid) do
       [user(id: id)] -> id
+      _ -> nil
+    end
+  end
+
+  @doc """
+  Returns the basic user info of given `id`.
+  """
+  def info(id) when is_integer(id) do
+    case lookup(id) do
+      [user(uid: uid, name: name)] -> %{uid: uid, name: name}
       _ -> nil
     end
   end
