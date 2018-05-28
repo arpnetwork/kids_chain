@@ -30,7 +30,7 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 config :prometheus, KidsChain.PipelineInstrumenter,
-  labels: [:status_class, :method, :host, :scheme, :request_path],
+  labels: [:status_code, :method, :host, :scheme, :request_path],
   duration_buckets: [
     10,
     100,
