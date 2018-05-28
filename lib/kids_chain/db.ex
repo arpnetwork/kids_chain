@@ -7,7 +7,7 @@ defmodule KidsChain.DB do
   A set of functions for working with user over Mnesia.
   """
 
-  Record.defrecord(:user, [:uid, :id, :inviter, :content, :from, :to, :address])
+  Record.defrecord(:user, [:uid, :id, :inviter, :content, :from, :to, :address, :at])
 
   @timeout 5000
 
@@ -53,7 +53,8 @@ defmodule KidsChain.DB do
 
       true ->
         id = :mnesia.dirty_update_counter(:variable, :id, 1)
-        u = params |> to_user() |> user(id: id, inviter: inviter)
+        at = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+        u = params |> to_user() |> user(id: id, inviter: inviter, at: at)
 
         :mnesia.sync_transaction(fn ->
           :mnesia.write(u)
