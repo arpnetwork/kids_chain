@@ -68,7 +68,7 @@ defmodule KidsChain.KChain do
   Returns the current chain by given `id`.
   """
   @spec chain(id, integer) :: {:ok, list} | :error
-  def chain(id \\ 0, limit \\ 16) do
+  def chain(id \\ 0, limit \\ 25) do
     command(["c", id, limit], fn ids -> {:ok, List.delete(ids, 0)} end)
   end
 
