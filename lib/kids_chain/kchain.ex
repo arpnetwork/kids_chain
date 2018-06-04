@@ -32,7 +32,7 @@ defmodule KidsChain.KChain do
 
   use GenServer
 
-  Record.defrecordp(:state, port: nil, pids: :queue.new(), seq: 0)
+  Record.defrecordp(:state, port: nil, pids: :queue.new(), seq: 0, data: "")
 
   @doc """
   Starts a KChain process linked to the current process.
@@ -82,9 +82,9 @@ defmodule KidsChain.KChain do
   end
 
   @doc false
-  def handle_info({port, {:data, {:eol, value}}}, state(port: port, pids: pids) = s) do
+  def handle_info({port, {:data, {:eol, value}}}, state(port: port, pids: pids, data: data) = s) do
     res =
-      case String.split(value, " ") |> Enum.map(&String.to_integer/1) do
+      case String.split(data <> value, " ") |> Enum.map(&String.to_integer/1) do
         [0 | items] -> {:ok, items}
         _ -> :error
       end
@@ -92,7 +92,12 @@ defmodule KidsChain.KChain do
     {{:value, pid}, pids} = :queue.out(pids)
     GenServer.reply(pid, res)
 
-    {:noreply, state(s, pids: pids)}
+    {:noreply, state(s, pids: pids, data: "")}
+  end
+
+  @doc false
+  def handle_info({port, {:data, {:noeol, value}}}, state(port: port, data: data) = s) do
+    {:noreply, state(s, data: data <> value)}
   end
 
   # Makes a synchronous command call to the server and waits for its reply.
