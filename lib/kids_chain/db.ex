@@ -125,6 +125,20 @@ defmodule KidsChain.DB do
   end
 
   @doc """
+  Finds the user of given `name`.
+  """
+  def lookup_by_name(name) when is_binary(name) do
+    :mnesia.dirty_match_object(user(name: name, _: :_))
+  end
+
+  @doc """
+  Finds the children of given `id`.
+  """
+  def children(id) when is_integer(id) do
+    :mnesia.dirty_match_object(user(inviter: id, _: :_))
+  end
+
+  @doc """
   Traverses a user table and performs operations on all records in the table.
   """
   def next(uid \\ nil) do
